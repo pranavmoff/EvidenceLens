@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from PIL import Image
 from transformers import pipeline
 import io
+import os
+import json
 
 app = Flask(__name__)
 
@@ -20,6 +22,25 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/evidence.json")
+@app.route("/api/evidence")
+def get_evidence():
+    evidence_path = os.path.join(app.root_path, "evidence.json")
+    if os.path.exists(evidence_path):
+        with open(evidence_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify(data)
+    return jsonify([])
+
+
+@app.route("/<path:filename>")
+def serve_static_fallback(filename):
+    static_file_path = os.path.join(app.static_folder, filename)
+    if os.path.exists(static_file_path):
+        return send_from_directory(app.static_folder, filename)
+    return jsonify({"error": "File not found"}), 404
+
+
 @app.route("/api/analyze", methods=["POST"])
 def analyze():
 
@@ -32,11 +53,74 @@ def analyze():
             "message": "Please enter a claim."
         }), 400
 
-    if not image:
+    disaster_words = {
+        "flood": [
+            "flood",
+            "flooding",
+            "water",
+            "inundated"
+        ],
+        "rain": [
+            "rain",
+            "rainfall",
+            "heavy rain"
+        ],
+        "storm": [
+            "storm",
+            "cyclone",
+            "hurricane",
+            "typhoon"
+        ],
+        "fire": [
+            "fire",
+            "burning",
+            "flames"
+        ],
+        "accident": [
+            "accident",
+            "crash",
+            "collision"
+        ],
+        "earthquake": [
+            "earthquake",
+            "collapsed building",
+            "building collapse"
+        ]
+    }
+
+    if not image or image.filename == '':
+        claim_lower = claim.lower()
+        matched_category = None
+
+        for category, words in disaster_words.items():
+            if any(word in claim_lower for word in words):
+                matched_category = category
+                break
+
+        if matched_category:
+            verdict = "SUPPORTED"
+            explanation = (
+                f"The claim references a recognized event category ('{matched_category}'). "
+                f"Upload a supporting image for visual provenance analysis."
+            )
+            confidence = 75
+        else:
+            verdict = "UNVERIFIED"
+            explanation = (
+                "The claim could not be matched with known disaster categories in the database."
+            )
+            confidence = 50
+
         return jsonify({
-            "success": False,
-            "message": "Please upload an image."
-        }), 400
+            "success": True,
+            "verdict": verdict,
+            "confidence": confidence,
+            "claim": claim,
+            "image": None,
+            "detected_scene": matched_category or "none",
+            "visual_score": 0.0,
+            "explanation": explanation
+        })
 
     try:
         image_bytes = image.read()
@@ -66,41 +150,6 @@ def analyze():
 
         # Check whether the claim matches the visual result
         claim_lower = claim.lower()
-
-        disaster_words = {
-            "flood": [
-                "flood",
-                "flooding",
-                "water",
-                "inundated"
-            ],
-            "rain": [
-                "rain",
-                "rainfall",
-                "heavy rain"
-            ],
-            "storm": [
-                "storm",
-                "cyclone",
-                "hurricane",
-                "typhoon"
-            ],
-            "fire": [
-                "fire",
-                "burning",
-                "flames"
-            ],
-            "accident": [
-                "accident",
-                "crash",
-                "collision"
-            ],
-            "earthquake": [
-                "earthquake",
-                "collapsed building",
-                "building collapse"
-            ]
-        }
 
         matched_category = None
 
@@ -185,3 +234,4 @@ def analyze():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
