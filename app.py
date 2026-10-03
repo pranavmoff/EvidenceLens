@@ -1,0 +1,187 @@
+from flask import Flask, render_template, request, jsonify
+from PIL import Image
+from transformers import pipeline
+import io
+
+app = Flask(__name__)
+
+print("Loading AI image model...")
+
+image_classifier = pipeline(
+    "zero-shot-image-classification",
+    model="openai/clip-vit-base-patch32"
+)
+
+print("AI image model loaded successfully.")
+
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/api/analyze", methods=["POST"])
+def analyze():
+
+    claim = request.form.get("claim", "").strip()
+    image = request.files.get("image")
+
+    if not claim:
+        return jsonify({
+            "success": False,
+            "message": "Please enter a claim."
+        }), 400
+
+    if not image:
+        return jsonify({
+            "success": False,
+            "message": "Please upload an image."
+        }), 400
+
+    try:
+        image_bytes = image.read()
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+
+        # Candidate visual categories
+        labels = [
+            "a photo showing flooding",
+            "a photo showing heavy rain",
+            "a photo showing a cyclone or storm",
+            "a photo showing a fire",
+            "a photo showing a road accident",
+            "a photo showing an earthquake or collapsed building",
+            "a normal outdoor photograph",
+            "a photograph unrelated to a disaster"
+        ]
+
+        predictions = image_classifier(
+            img,
+            candidate_labels=labels
+        )
+
+        top_prediction = predictions[0]
+
+        detected_scene = top_prediction["label"]
+        visual_score = float(top_prediction["score"])
+
+        # Check whether the claim matches the visual result
+        claim_lower = claim.lower()
+
+        disaster_words = {
+            "flood": [
+                "flood",
+                "flooding",
+                "water",
+                "inundated"
+            ],
+            "rain": [
+                "rain",
+                "rainfall",
+                "heavy rain"
+            ],
+            "storm": [
+                "storm",
+                "cyclone",
+                "hurricane",
+                "typhoon"
+            ],
+            "fire": [
+                "fire",
+                "burning",
+                "flames"
+            ],
+            "accident": [
+                "accident",
+                "crash",
+                "collision"
+            ],
+            "earthquake": [
+                "earthquake",
+                "collapsed building",
+                "building collapse"
+            ]
+        }
+
+        matched_category = None
+
+        for category, words in disaster_words.items():
+            if any(word in claim_lower for word in words):
+                matched_category = category
+                break
+
+        # Determine whether the detected image scene matches the claim
+        if matched_category == "flood":
+            claim_match = "flooding" in detected_scene
+
+        elif matched_category == "rain":
+            claim_match = (
+                "heavy rain" in detected_scene
+                or "flooding" in detected_scene
+            )
+
+        elif matched_category == "storm":
+            claim_match = "cyclone" in detected_scene or "storm" in detected_scene
+
+        elif matched_category == "fire":
+            claim_match = "fire" in detected_scene
+
+        elif matched_category == "accident":
+            claim_match = "accident" in detected_scene
+
+        elif matched_category == "earthquake":
+            claim_match = "earthquake" in detected_scene
+
+        else:
+            claim_match = False
+
+        # Calculate a simple prototype confidence
+        confidence = round(visual_score * 100)
+
+        if claim_match and visual_score >= 0.40:
+            verdict = "SUPPORTED"
+            explanation = (
+                f"The AI image model identified the uploaded image as "
+                f"'{detected_scene}' with approximately {confidence}% "
+                f"visual confidence. This is consistent with the claim."
+            )
+
+        elif claim_match:
+            verdict = "MIXED"
+            explanation = (
+                f"The AI image model identified the image as "
+                f"'{detected_scene}', but the visual confidence is "
+                f"relatively low."
+            )
+
+        else:
+            verdict = "UNVERIFIED"
+            explanation = (
+                f"The AI image model identified the image primarily as "
+                f"'{detected_scene}'. This does not clearly match the "
+                f"claim, so the claim cannot be visually supported."
+            )
+
+        result = {
+            "success": True,
+            "verdict": verdict,
+            "confidence": confidence,
+            "claim": claim,
+            "image": image.filename,
+            "detected_scene": detected_scene,
+            "visual_score": round(visual_score * 100, 2),
+            "explanation": explanation
+        }
+
+        return jsonify(result)
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to analyze the uploaded image.",
+            "error": str(e)
+        }), 500
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

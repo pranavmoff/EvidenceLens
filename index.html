@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EvidenceLens | Multimodal Trust Workbench</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- IMPORTANT: Flask static path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <i data-lucide="shield-check"></i>
+            </div>
+
+            <div>
+                <div class="logo-title">EvidenceLens</div>
+                <div class="logo-subtitle">Trust Workbench</div>
+            </div>
+        </div>
+
+
+        <nav class="navigation">
+
+            <button class="nav-item active" data-page="overview">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Overview</span>
+            </button>
+
+            <button class="nav-item" data-page="verify">
+                <i data-lucide="search-check"></i>
+                <span>Verify Claim</span>
+            </button>
+
+            <button class="nav-item" data-page="evidence">
+                <i data-lucide="file-search"></i>
+                <span>Evidence</span>
+            </button>
+
+            <button class="nav-item" data-page="media">
+                <i data-lucide="image"></i>
+                <span>Media Provenance</span>
+            </button>
+
+            <button class="nav-item" data-page="graph">
+                <i data-lucide="network"></i>
+                <span>Evidence Graph</span>
+            </button>
+
+            <button class="nav-item" data-page="review">
+                <i data-lucide="clipboard-check"></i>
+                <span>Review</span>
+            </button>
+
+            <button class="nav-item" data-page="reports">
+                <i data-lucide="file-text"></i>
+                <span>Reports</span>
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="prototype-label">
+                <span class="status-dot"></span>
+                Prototype Mode
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <button id="mobileMenu" class="mobile-menu">
+                <i data-lucide="menu"></i>
+            </button>
+
+            <div>
+                <div class="eyebrow">EVIDENCE WORKBENCH</div>
+                <h1 id="pageTitle">Overview</h1>
+            </div>
+
+        </header>
+
+
+        <!-- ================= OVERVIEW ================= -->
+
+        <section class="page active" id="overview">
+
+            <div class="hero">
+
+                <div class="hero-content">
+
+                    <div class="badge">
+                        <i data-lucide="sparkles"></i>
+                        Multimodal verification prototype
+                    </div>
+
+                    <h2>
+                        Verify the claim.
+                        <span>Inspect the evidence.</span>
+                    </h2>
+
+                    <p>
+                        EvidenceLens helps investigators examine claims,
+                        source evidence, media provenance and disagreement
+                        before making a final assessment.
+                    </p>
+
+                    <div class="hero-buttons">
+
+                        <button class="primary-btn" id="exploreDemo">
+                            <i data-lucide="play"></i>
+                            Explore Demo
+                        </button>
+
+                        <button class="secondary-btn" data-go="verify">
+                            Start Verification
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-visual">
+
+                    <div class="visual-card">
+
+                        <div class="visual-header">
+                            <span>VERIFICATION SIGNAL</span>
+                            <span class="signal-dot"></span>
+                        </div>
+
+                        <div class="visual-score">
+                            81%
+                        </div>
+
+                        <div class="visual-label">
+                            Evidence confidence
+                        </div>
+
+                        <div class="visual-bar">
+                            <div style="width:81%"></div>
+                        </div>
+
+                        <div class="visual-row">
+                            <span>Event</span>
+                            <strong>Supported</strong>
+                        </div>
+
+                        <div class="visual-row">
+                            <span>Location</span>
+                            <strong>Supported</strong>
+                        </div>
+
+                        <div class="visual-row">
+                            <span>Media context</span>
+                            <strong class="warning-text">Mismatch</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="section-title">
+                <div>
+                    <h3>Demo scenarios</h3>
+                    <p>Try different evidence conditions.</p>
+                </div>
+            </div>
+
+
+            <div class="demo-grid">
+
+                <button class="demo-btn" data-demo="old">
+
+                    <div class="demo-icon warning-icon">
+                        <i data-lucide="history"></i>
+                    </div>
+
+                    <div>
+                        <strong>Old Image + New Caption</strong>
+                        <span>Media appears reused from an earlier event.</span>
+                    </div>
+
+                    <i data-lucide="arrow-up-right"></i>
+
+                </button>
+
+
+                <button class="demo-btn" data-demo="supported">
+
+                    <div class="demo-icon success-icon">
+                        <i data-lucide="circle-check"></i>
+                    </div>
+
+                    <div>
+                        <strong>Supported Claim</strong>
+                        <span>Evidence consistently supports the claim.</span>
+                    </div>
+
+                    <i data-lucide="arrow-up-right"></i>
+
+                </button>
+
+
+                <button class="demo-btn" data-demo="unknown">
+
+                    <div class="demo-icon neutral-icon">
+                        <i data-lucide="circle-help"></i>
+                    </div>
+
+                    <div>
+                        <strong>Insufficient Evidence</strong>
+                        <span>No strong supporting evidence is available.</span>
+                    </div>
+
+                    <i data-lucide="arrow-up-right"></i>
+
+                </button>
+
+
+                <button class="demo-btn" data-demo="conflict">
+
+                    <div class="demo-icon conflict-icon">
+                        <i data-lucide="git-compare"></i>
+                    </div>
+
+                    <div>
+                        <strong>Conflicting Sources</strong>
+                        <span>Credible sources disagree on a key fact.</span>
+                    </div>
+
+                    <i data-lucide="arrow-up-right"></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= VERIFY ================= -->
+
+        <section class="page" id="verify">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">INVESTIGATION</div>
+                    <h2>Verify a claim</h2>
+                    <p>
+                        Provide a claim and optional media for analysis.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="verify-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <h3>Claim</h3>
+                            <p>What are you trying to verify?</p>
+                        </div>
+                    </div>
+
+                    <textarea id="claimInput"
+                        placeholder="Enter a claim...">This image shows flooding in Chennai during August 2026.</textarea>
+
+
+                    <div class="upload-title">
+                        <strong>Supporting image</strong>
+                        <span>Optional</span>
+                    </div>
+
+
+                    <div class="upload-zone" id="uploadZone">
+
+                        <input type="file" id="imageInput" accept="image/*" hidden>
+
+
+                        <div id="uploadPlaceholder">
+
+                            <div class="upload-icon">
+                                <i data-lucide="upload-cloud"></i>
+                            </div>
+
+                            <strong>Upload an image</strong>
+
+                            <span>
+                                PNG, JPG or WEBP · Max 10 MB
+                            </span>
+
+                        </div>
+
+
+                        <div id="imagePreview" class="image-preview hidden">
+
+                            <img id="previewImg" src="" alt="Preview">
+
+                            <div class="preview-info">
+
+                                <strong id="fileName">
+                                    image.jpg
+                                </strong>
+
+                                <button type="button" id="removeImage" class="remove-btn">
+                                    <i data-lucide="x"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <button id="analyzeBtn" class="primary-btn analyze-btn">
+                        <i data-lucide="scan-search"></i>
+                        Analyze Claim
+                    </button>
+
+                </div>
+
+
+                <div class="panel methodology">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>How EvidenceLens works</h3>
+                            <p>Four evidence dimensions.</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="method-item">
+
+                        <div class="method-icon">
+                            <i data-lucide="clock-3"></i>
+                        </div>
+
+                        <div>
+                            <strong>When</strong>
+                            <span>Does the timing match?</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="method-item">
+
+                        <div class="method-icon">
+                            <i data-lucide="map-pin"></i>
+                        </div>
+
+                        <div>
+                            <strong>Where</strong>
+                            <span>Does the location match?</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="method-item">
+
+                        <div class="method-icon">
+                            <i data-lucide="scan"></i>
+                        </div>
+
+                        <div>
+                            <strong>What</strong>
+                            <span>Does the evidence support the event?</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="method-item">
+
+                        <div class="method-icon">
+                            <i data-lucide="image"></i>
+                        </div>
+
+                        <div>
+                            <strong>Media</strong>
+                            <span>Is the media context consistent?</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= EVIDENCE ================= -->
+
+        <section class="page" id="evidence">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">SOURCES</div>
+                    <h2>Evidence</h2>
+                    <p>Inspect the evidence used in the prototype.</p>
+                </div>
+
+                <div class="filters">
+
+                    <button class="filter-btn active">All</button>
+                    <button class="filter-btn">Supporting</button>
+                    <button class="filter-btn">Contradicting</button>
+
+                </div>
+
+            </div>
+
+
+            <div id="evidenceContainer"></div>
+
+        </section>
+
+
+        <!-- ================= MEDIA ================= -->
+
+        <section class="page" id="media">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">MEDIA ANALYSIS</div>
+                    <h2>Media Provenance</h2>
+                    <p>Inspect visual similarity and media context.</p>
+                </div>
+
+            </div>
+
+
+            <div class="media-grid">
+
+                <div class="panel media-placeholder">
+
+                    <i data-lucide="image"></i>
+
+                    <h3>Media fingerprint</h3>
+
+                    <p>
+                        Visual similarity and provenance signals
+                        are shown after analysis.
+                    </p>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <h3>Similarity signal</h3>
+
+                    <div class="big-number" id="similarityValue">
+                        92%
+                    </div>
+
+                    <div class="visual-bar">
+                        <div id="mediaSimilarityBar" style="width:92%"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= GRAPH ================= -->
+
+        <section class="page" id="graph">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">RELATIONSHIPS</div>
+                    <h2>Evidence Graph</h2>
+                    <p>Visualize the relationships between claims and evidence.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel graph-panel">
+
+                <div class="graph-node main-node">
+                    <i data-lucide="message-square-check"></i>
+                    <strong>Claim</strong>
+                </div>
+
+
+                <div class="graph-lines">
+
+                    <div class="graph-line"></div>
+                    <div class="graph-line"></div>
+                    <div class="graph-line"></div>
+
+                </div>
+
+
+                <div class="graph-nodes">
+
+                    <div class="graph-node">
+                        <i data-lucide="newspaper"></i>
+                        <strong>Source A</strong>
+                    </div>
+
+                    <div class="graph-node">
+                        <i data-lucide="image"></i>
+                        <strong>Media</strong>
+                    </div>
+
+                    <div class="graph-node">
+                        <i data-lucide="archive"></i>
+                        <strong>Archive</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= REVIEW ================= -->
+
+        <section class="page" id="review">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">HUMAN REVIEW</div>
+                    <h2>Analyst Review</h2>
+                    <p>Record a final analyst decision.</p>
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>Decision</h3>
+
+                <div class="decision-grid">
+
+                    <button class="decision-btn" data-decision="supported">
+                        <i data-lucide="circle-check"></i>
+                        Supported
+                    </button>
+
+                    <button class="decision-btn" data-decision="mixed">
+                        <i data-lucide="triangle-alert"></i>
+                        Mixed
+                    </button>
+
+                    <button class="decision-btn" data-decision="contradicted">
+                        <i data-lucide="circle-x"></i>
+                        Contradicted
+                    </button>
+
+                    <button class="decision-btn" data-decision="insufficient">
+                        <i data-lucide="circle-help"></i>
+                        Insufficient
+                    </button>
+
+                </div>
+
+
+                <textarea id="analystNotes" class="notes" placeholder="Add your reasoning..."></textarea>
+
+
+                <button id="saveReview" class="primary-btn">
+                    <i data-lucide="save"></i>
+                    Record Decision
+                </button>
+
+
+                <div id="reviewSuccess" class="success-message hidden">
+                    <i data-lucide="circle-check"></i>
+                    Analyst decision recorded successfully.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= REPORTS ================= -->
+
+        <section class="page" id="reports">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">OUTPUT</div>
+                    <h2>Reports</h2>
+                    <p>Generate and print the verification report.</p>
+                </div>
+
+                <button id="printReport" class="secondary-btn">
+                    <i data-lucide="printer"></i>
+                    Print Report
+                </button>
+
+            </div>
+
+
+            <div class="report-card">
+
+                <div class="report-header">
+
+                    <div>
+                        <strong>EvidenceLens</strong>
+                        <span>Verification Assessment</span>
+                    </div>
+
+                    <div id="reportTime"></div>
+
+                </div>
+
+
+                <div class="report-verdict">
+
+                    <div>
+                        <span>VERDICT</span>
+                        <strong id="reportVerdict">MIXED</strong>
+                    </div>
+
+                    <div>
+                        <span>CONFIDENCE</span>
+                        <strong id="reportConfidence">81%</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <span>CLAIM</span>
+
+                    <p id="reportClaim"></p>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <span>EXPLANATION</span>
+
+                    <p id="reportExplanation"></p>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <span>CLAIM BREAKDOWN</span>
+
+                    <div id="reportClaims"></div>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <span>MEDIA SIMILARITY</span>
+
+                    <strong id="reportSimilarity">92%</strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RESULTS ================= -->
+
+        <section class="page" id="results">
+
+            <div class="page-heading">
+
+                <div>
+                    <div class="eyebrow">ANALYSIS COMPLETE</div>
+                    <h2>Verification Analysis</h2>
+                    <p>Assessment generated from the prototype evidence corpus.</p>
+                </div>
+
+            </div>
+
+
+            <div class="verdict-banner" id="verdictBanner">
+
+                <div class="verdict-symbol" id="verdictSymbol">
+                    <i data-lucide="triangle-alert"></i>
+                </div>
+
+
+                <div class="verdict-content">
+
+                    <span>VERDICT</span>
+
+                    <h2 id="verdictText">
+                        MIXED
+                    </h2>
+
+                    <p id="verdictExplanation"></p>
+
+                </div>
+
+
+                <div class="confidence-box">
+
+                    <span>CONFIDENCE</span>
+
+                    <strong id="confidenceValue">
+                        81%
+                    </strong>
+
+                    <div class="confidence-bar">
+                        <div id="confidenceFill"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Claim breakdown</h3>
+                            <p id="claimCount">4 claims</p>
+                        </div>
+
+                    </div>
+
+                    <div id="claimsContainer"></div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>Evidence fingerprint</h3>
+                            <p>Context consistency signals.</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="fingerprint">
+
+                        <div class="fingerprint-row">
+
+                            <div>
+                                <span>When</span>
+                                <strong id="whenStatus">
+                                    Mismatch
+                                </strong>
+                            </div>
+
+                            <span class="fingerprint-status">
+                                <i data-lucide="triangle-alert"></i>
+                            </span>
+
+                        </div>
+
+
+                        <div class="fingerprint-row">
+
+                            <div>
+                                <span>Where</span>
+                                <strong id="whereStatus">
+                                    Match
+                                </strong>
+                            </div>
+
+                            <span class="fingerprint-status">
+                                <i data-lucide="check"></i>
+                            </span>
+
+                        </div>
+
+
+                        <div class="fingerprint-row">
+
+                            <div>
+                                <span>What</span>
+                                <strong id="whatStatus">
+                                    Match
+                                </strong>
+                            </div>
+
+                            <span class="fingerprint-status">
+                                <i data-lucide="check"></i>
+                            </span>
+
+                        </div>
+
+
+                        <div class="fingerprint-row">
+
+                            <div>
+                                <span>Media</span>
+                                <strong id="mediaStatus">
+                                    Reused
+                                </strong>
+                            </div>
+
+                            <span class="fingerprint-status">
+                                <i data-lucide="triangle-alert"></i>
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="similarity-card">
+
+                        <span>Visual similarity</span>
+
+                        <strong id="similarityValue">
+                            92%
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= TOAST ================= -->
+
+    <div id="toast" class="toast">
+        <i data-lucide="info"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+
+    <!-- IMPORTANT: Flask static path -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    </script>
+
+</body>
+
+</html>
